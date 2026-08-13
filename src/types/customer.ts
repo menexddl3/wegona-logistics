@@ -1,9 +1,15 @@
 export interface Customer {
     id: string;
+    created_at: string;
     company_id: string;
+
     customer_name: string;
-    address: string;
+    company_name: string;
+
     phone: string;
     email: string;
-    created_at: string;
+
+    address: string;
+    city: string;
+    country: string;
 }
