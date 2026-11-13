@@ -1,16 +1,18 @@
 import {useEffect, useState} from "react";
-import {getCustomers} from "../../services/customerService";
+import {getCustomers, deleteCustomer} from "../../services/customerService";
 import type {Customer} from "../../types/customer";
 import CustomerHeader from "../../components/customers/CustomerHeader";
 import CustomerSearch from "../../components/customers/CustomerSearch";
 import CustomerTable from "../../components/customers/CustomerTable";
 import AddCustomerModal from "../../components/customers/AddCustomerModal";
+import EditCustomerModal from "../../components/customers/EditCustomerModal";
 
 function CustomerPage() {
     const [customers, setCustomers] = useState<Customer[]>([]);
     const [loading, setLoading] = useState(true);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [searchTerm, setSearchTerm] = useState("");
+    const [selectedCustomer, setSelectedCustomer] = useState<Customer | null> (null);
 
     async function loadCustomers(){
         try {
@@ -26,6 +28,22 @@ function CustomerPage() {
     useEffect(() => {
         loadCustomers();
     }, []);
+
+    const handleDelete = async (id: string) => {
+        const confirmed = window.confirm(
+            "Are you sure you want to delete this customer?"
+        );
+
+        if  (!confirmed) return;
+        
+        try {
+            await deleteCustomer(id);
+
+            await loadCustomers();
+        } catch (error) {
+            console.error("Failed to delete customer:", error);
+        }
+    };
 
     const filteredCustomers = customers.filter((customer) =>{
         const search = searchTerm.toLowerCase();
@@ -57,7 +75,21 @@ function CustomerPage() {
             onSearchChange={setSearchTerm}
             />
 
-            <CustomerTable customers={filteredCustomers} />
+            <CustomerTable 
+                customers={filteredCustomers}
+                onEditCustomer={(customer) => {
+                    console.log("Edit Click:", customer)
+                    setSelectedCustomer(customer);
+                }} 
+                onDelete={handleDelete}
+            />
+
+            <EditCustomerModal
+            customer={selectedCustomer}
+            isOpen={selectedCustomer !== null}
+            onClose={() => setSelectedCustomer(null)}
+            onSaved={loadCustomers}
+            />
 
             <AddCustomerModal 
             isOpen={isModalOpen} 

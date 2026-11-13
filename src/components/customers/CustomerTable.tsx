@@ -3,9 +3,11 @@ import type { Customer } from "../../types/customer";
 
 interface Props {
     customers: Customer[];
+    onEditCustomer:(customer: Customer) => void;
+    onDelete: (id: string) => void;
 }
 
-function CustomerTable({ customers }: Props) {
+function CustomerTable({ customers, onEditCustomer, onDelete }: Props) {
     return (
         <div className="overflow-hidden rounded-xl border bg-white shadow-sm">
 
@@ -24,8 +26,8 @@ function CustomerTable({ customers }: Props) {
                     {customers.map((customer) => (
                         <tr
                             key={customer.id}
-                            className="border-t odd:bg-white even:bg-slate-50 hover:bg-blue-50 transition-colors"
-                        >
+                            className="border-t odd:bg-white even:bg-slate-50 hover:bg-blue-50 transition-colors">
+                                
                             <td className="px-6 py-4">
                                 <div>
                                     <p className="font-semibold">
@@ -47,10 +49,15 @@ function CustomerTable({ customers }: Props) {
 
                             <td className="px-6 py-4 text-center">
                                 <div className="flex justify-center gap-2">
-                                    <button className="p-2 rounded-lg hover:bg-blue-100 text-blue-600 transition">
+                                    <button
+                                        onClick={() => onEditCustomer(customer)}
+                                        className="p-2 rounded-lg hover:bg-blue-100 text-blue-600 transition">
                                         <Pencil size={18} />
                                     </button>
-                                    <button className="p-2 rounded-lg hover:bg-red-100 text-red-600 transition">
+
+                                    <button
+                                        onClick={() => onDelete(customer.id)}
+                                        className="p-2 rounded-lg hover:bg-red-100 text-red-600 transition">
                                         <Trash2 size={18} />
                                     </button>
                                 </div>
